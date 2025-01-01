@@ -1,0 +1,137 @@
+/* :root {
+    --total-slides: 9;   Update this number when adding slides
+    --slide-duration: 6s;
+    --animation-cycle: calc(var(--total-slides) * var(--slide-duration));
+} */
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #111;
+    overflow: hidden;
+}
+.slideshow {
+    width: 90vw;
+    height: 50vw;
+    max-width: 1400px;
+    max-height: 800px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.corner-only {
+    --s: 35px;
+    border: 8px solid #e5e1e1; 
+    padding: 10px;
+    position: absolute;
+    right: 10%;
+    top: 45%;
+    height: 150px;
+    width: 200px;
+    background: #1b1a1a content-box;
+    color: #fff;
+    transform: none;
+    animation: none;
+    mask: 
+      conic-gradient(#000 0 0) content-box,
+      conic-gradient(at var(--s) var(--s),#0000 75%,#000 0) 
+      0 0/calc(100% - var(--s)) calc(100% - var(--s));
+}
+.corner-only p{
+    font-size: 1.2rem;
+    justify-content: center;
+    text-align: center;
+    color: yellow;
+  }
+
+/*IMAGE ANIMATION*/
+.slide {
+    position: absolute;
+    inset: 0;
+    background-size: 110%;
+    background-position: center;
+    opacity: 0;
+    animation-delay: 6s;
+    z-index: 1;
+    /* animation: fadeInOut 56s infinite ease-in-out, panImageLeft 12s infinite ease-out, zoomEffect 12s infinite ease-in-out; */
+    animation: fadeInOut var(--animation-cycle) infinite ease-in-out, panImageLeft 12s infinite ease-out, zoomEffect 12s infinite ease-in-out;
+    background-repeat: no-repeat;
+    transform-origin: center;
+}
+
+.slide:nth-child(2n) {
+    /* animation:fadeInOut 56s infinite ease-in-out, panImageBottom 12s infinite ease-out,  zoomEffect 12s infinite ease-in-out; */
+    animation: fadeInOut var(--animation-cycle) infinite ease-in-out, panImageBottom 12s infinite ease-out, zoomEffect 12s infinite ease-in-out;
+}
+
+.slide:nth-child(n) {
+    animation-delay: calc((var(--slide-duration) * (n - 1)));
+}
+
+/* .slide:nth-child(1) { animation-delay: 0s; }
+.slide:nth-child(2) { animation-delay: 6s; }
+.slide:nth-child(3) { animation-delay: 12s; }
+.slide:nth-child(4) { animation-delay: 18s; }
+.slide:nth-child(5) { animation-delay: 24s; }
+.slide:nth-child(6) { animation-delay: 30s; }
+.slide:nth-child(7) { animation-delay: 36s; }
+.slide:nth-child(8) { animation-delay: 42s; }
+.slide:nth-child(9) { animation-delay: 48s; }
+.slide:nth-child(10) { animation-delay: 54s; } */
+
+/* @keyframes fadeInOut {
+    0%, 16.66% { opacity: 0; }
+    8.33%, 13.88% { opacity: 1; }
+    100% { opacity: 0; }
+} */
+
+@keyframes fadeInOut {
+    /* 0% { opacity: 0; }
+    2% { opacity: 1; }
+    12% { opacity: 1; }
+    14% { opacity: 0; }
+    100% { opacity: 0; } */
+    0%, 14% { opacity: 0; }  /* Ensure the overlay is hidden at the start and end */
+    2%, 12% { opacity: 1; }  /* Keep the overlay visible only during the intended display time */
+    100% { opacity: 0; } 
+}
+@keyframes panImageLeft {
+    0% { background-position: 100% center; }
+    100% { background-position: 0% center; }
+}
+@keyframes panImageRight {
+    0%{ background-position: 0% center; }
+    100%{ background-position: 100% center; }
+}
+@keyframes panImageBottom {
+    0% { background-position: center 100%; }
+    100% { background-position: center 0%; }
+}
+@keyframes zoomEffect {
+    0%, 100% { transform: scale(1.05); }
+    50% { transform: scale(1.15); }
+}
+/*@keyframes zoomEffect {
+    0%, 100% { transform: scale(1.05); }
+    50% { transform: scale(1.15); }
+} */
+
+
+
+/* Adjust pan animations to match new timing */
+/* @keyframes panImageLeft {
+    0% { background-position: 100% center; }
+    50% { background-position: 0% center; }
+    100% { background-position: 0% center; }
+}
+
+@keyframes panImageBottom {
+    0% { background-position: center 100%; }
+    50% { background-position: center 0%; }
+    100% { background-position: center 0%; }
+} */
