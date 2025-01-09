@@ -47,7 +47,7 @@ const slides = [
         quote: 'A cozy retreat for your guests, ensuring comfort and relaxation.',
         icon: '../images/bedroom.svg'
     },
-    {
+    /*{
         image: '../images/9.jpg',
         caption: 'Corridor',
         quote: 'Connecting spaces with elegance and style.',
@@ -82,7 +82,7 @@ const slides = [
         caption: 'Office Space',
         quote: 'Where productivity meets inspiration.',
         icon: '../images/office.svg'
-    },
+    },*/
     {
         image: '../images/background.jpg',
         type: 'contact'
