@@ -9,13 +9,23 @@
     <link rel="stylesheet" href="./styles/contactUs.css">
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=home_pin" />
-    <title>Slideshow</title>
+    <title>Dynamic Slideshow</title>
 </head>
 <body>
     <div class="slideshow" id="slideshow">
-        <!-- SLIDES OVER HERE -->
+        <!-- Slides will be generated here -->
     </div>
-    <script src="./js/slideConfig.js"></script>
-    <script src="./js/slideGenerator.js"></script>
+
+    <script type="module" src="./js/slideConfig.js"></script>
+    <script type="module" src="./js/slideGenerator.js"></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            console.log('Window loaded');
+            const slideshow = document.getElementById('slideshow');
+            console.log('Slideshow container:', slideshow);
+            console.log('Slideshow content:', slideshow.innerHTML);
+        });
+    </script>
 </body>
 </html>

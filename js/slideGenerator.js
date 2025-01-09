@@ -1,26 +1,40 @@
+import { slides, SLIDE_DURATION } from './slideConfig.js';
+
+function createCaptionElement(slide) {
+    return `
+        <div class="caption ${slide.slantedEdge?.captionPosition || ''}">
+            <img src="${slide.icon}"/>
+            ${slide.caption}
+        </div>
+    `;
+}
+
 function createWelcomeSlide(slide, index) {
+    const { propertyDetails } = slide;
+    const { bedrooms, livingRooms, kitchens, bathrooms } = propertyDetails.amenities;
+    
     return `
         <div class="slide" style="background-image: url('${slide.image}');">
             <div class="overlay">
                 <div class="curved-edge">
-                    <p><span>Welcome to Lavish Living</span><br/>
-                        <img src="./images/bedroom.svg"/> 2
-                        &nbsp; <img src="./images/livingroom.svg"/> 1
-                        &nbsp; <img src="./images/kitchen.svg"/> 1
-                        &nbsp; <img src="./images/bathtub.svg"/> 2
+                    <p><span>Welcome to ${propertyDetails.title}</span><br/>
+                        <img src="./images/bedroom.svg"/> ${bedrooms}
+                        &nbsp; <img src="./images/livingroom.svg"/> ${livingRooms}
+                        &nbsp; <img src="./images/kitchen.svg"/> ${kitchens}
+                        &nbsp; <img src="./images/bathtub.svg"/> ${bathrooms}
                     </p>
                 </div>
                 <div class="corner-only">
                     <p><span class="material-symbols-outlined" style="color: red;">home_pin</span>
-                        Star Society, A-123, Ahmedabad<br/><br/>
-                        Welcome to your dream home
+                        ${propertyDetails.address}<br/><br/>
+                        ${propertyDetails.subtitle}
                     </p>
                 </div>
-                <div class="slanted-edge-bottom"></div>
-                <div class="caption">
-                    <span><img src="${slide.icon}"/></span>
-                    ${slide.caption}
-                </div>
+                ${slide.slantedEdge ? `
+                    <div class="${slide.slantedEdge.class}">
+                        ${createCaptionElement(slide)}
+                    </div>
+                ` : ''}
             </div>
         </div>
     `;
@@ -48,50 +62,44 @@ function createContactSlide(slide) {
     `;
 }
 
-function getOverlayPattern(index, totalSlides) {
-    if (index === 0 || index === totalSlides - 1) return null;
+// function getOverlayPattern(index, totalSlides) {
+//     if (index === 0 || index === totalSlides - 1) return null;
     
-    const patterns = [
-        ['top-arrow', 'bottom-arrow'],
-        ['top-rect', 'bottom-rect'],
-        ['bottom-triangle', 'top-triangle'],
-        ['curtain-left', 'curtain-right']
-    ];
+//     const patterns = [
+//         ['top-arrow', 'bottom-arrow'],
+//         ['top-rect', 'bottom-rect'],
+//         ['bottom-triangle', 'top-triangle'],
+//         ['curtain-left', 'curtain-right']
+//     ];
     
-    const adjustedIndex = index - 1;
-    const patternIndex = adjustedIndex % patterns.length;
-    return patterns[patternIndex];
-}
+//     const adjustedIndex = index - 1;
+//     const patternIndex = adjustedIndex % patterns.length;
+//     return patterns[patternIndex];
+// }
 
-function getRectangleBarPosition(index, totalSlides) {
-
-    if (index === 0 || index === totalSlides - 1) return null;
-    return (index % 2 === 0) ? 'rectangle-bar-top' : 'rectangle-bar-bottom';
-}
-
-function getSlantedEdgePosition(index, totalSlides) {
-    if (index === totalSlides - 1) return null;
-    return (index % 2 === 0) ? 'slanted-edge-bottom' : 'slanted-edge-top';
-}
+// function getSlantedEdgePosition(index, totalSlides) {
+//     if (index === totalSlides - 1) return null;
+//     return (index % 2 === 0) ? 'slanted-edge-bottom' : 'slanted-edge-top';
+// }
 
 function createRegularSlide(slide, index, totalSlides) {
-    const overlayPattern = getOverlayPattern(index, totalSlides);
-    const rectangleBar = getRectangleBarPosition(index, totalSlides);
-    const slantedEdge = getSlantedEdgePosition(index, totalSlides);
+    const { overlay } = slide;
 
     return `
         <div class="slide" style="background-image: url('${slide.image}');">
             <div class="overlay">
-                ${overlayPattern ? `
-                    <div class="${overlayPattern[0]}"></div>
-                    <div class="${overlayPattern[1]}"></div>
+                ${overlay ? `
+                    <div class="${overlay.top || overlay.left}"></div>
+                    <div class="${overlay.bottom || overlay.right}"></div>
                 ` : ''}
-                ${slantedEdge ? `<div class="${slantedEdge}"></div>` : ''}
-                ${rectangleBar && slide.quote ? `<div class="${rectangleBar}"><i>${slide.quote}</i></div>` : ''}
-                <div class="caption">
-                    <img src="${slide.icon}"/>
-                    ${slide.caption}
-                </div>
+                ${slide.slantedEdge ? `
+                    <div class="${slide.slantedEdge.class}">
+                        ${createCaptionElement(slide)}
+                    </div>
+                ` : ''}
+                ${slide.rectangleBar && slide.quote ? `
+                    <div class="${slide.rectangleBar}"><i>${slide.quote}</i></div>
+                ` : ''}
             </div>
         </div>
     `;
