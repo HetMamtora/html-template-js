@@ -10,7 +10,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #111;
+    background: #fff;
     overflow: hidden;
 }
 .slideshow {
@@ -19,6 +19,8 @@ body {
     max-width: 1400px;
     max-height: 800px;
     position: relative;
+    z-index: 1;
+    background: #000;
     overflow: hidden;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -56,22 +58,25 @@ body {
     background-size: 110%;
     background-position: center;
     opacity: 0;
-    animation-delay: 6s;
+    /* animation-delay: 6s; */
     z-index: 1;
     /* animation: fadeInOut 56s infinite ease-in-out, panImageLeft 12s infinite ease-out, zoomEffect 12s infinite ease-in-out; */
-    animation: fadeInOut var(--animation-cycle) infinite ease-in-out, panImageLeft 12s infinite ease-out, zoomEffect 12s infinite ease-in-out;
+    /* animation: fadeInOut var(--animation-cycle) infinite ease-in-out, panImageLeft 12s infinite ease-out, zoomEffect 12s infinite ease-in-out; */
     background-repeat: no-repeat;
     transform-origin: center;
 }
+/* .slide[style*="opacity: 1"] {
+    z-index: 2;
+} */
 
 .slide:nth-child(2n) {
     /* animation:fadeInOut 56s infinite ease-in-out, panImageBottom 12s infinite ease-out,  zoomEffect 12s infinite ease-in-out; */
-    animation: fadeInOut var(--animation-cycle) infinite ease-in-out, panImageBottom 12s infinite ease-out, zoomEffect 12s infinite ease-in-out;
+    /* animation: fadeInOut var(--animation-cycle) infinite ease-in-out, panImageBottom 12s infinite ease-out, zoomEffect 12s infinite ease-in-out; */
 }
 
-.slide:nth-child(n) {
+/* .slide:nth-child(n) {
     animation-delay: calc((var(--slide-duration) * (n - 1)));
-}
+} */
 
 /* .slide:nth-child(1) { animation-delay: 0s; }
 .slide:nth-child(2) { animation-delay: 6s; }
@@ -90,17 +95,17 @@ body {
     100% { opacity: 0; }
 } */
 
-@keyframes fadeInOut {
+/* @keyframes fadeInOut { */
     /* 0% { opacity: 0; }
     2% { opacity: 1; }
     12% { opacity: 1; }
     14% { opacity: 0; }
     100% { opacity: 0; } */
-    0%, 14% { opacity: 0; }  /* Ensure the overlay is hidden at the start and end */
-    2%, 12% { opacity: 1; }  /* Keep the overlay visible only during the intended display time */
+    /* 0%, 14% { opacity: 0; }
+    2%, 12% { opacity: 1; }
     100% { opacity: 0; } 
-}
-@keyframes panImageLeft {
+} */
+/* @keyframes panImageLeft {
     0% { background-position: 100% center; }
     100% { background-position: 0% center; }
 }
@@ -115,7 +120,7 @@ body {
 @keyframes zoomEffect {
     0%, 100% { transform: scale(1.05); }
     50% { transform: scale(1.15); }
-}
+} */
 /*@keyframes zoomEffect {
     0%, 100% { transform: scale(1.05); }
     50% { transform: scale(1.15); }
@@ -135,3 +140,33 @@ body {
     50% { background-position: center 0%; }
     100% { background-position: center 0%; }
 } */
+
+.play-button-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.start-button {
+    padding: 20px 40px;
+    font-size: 1.2rem;
+    background: #ffffff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s;
+}
+
+.start-button:hover {
+    transform: scale(1.05);
+}

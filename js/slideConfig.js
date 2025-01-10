@@ -1,3 +1,11 @@
+const BASE_DURATION = 8;
+
+const AUDIO_FILES = {
+    WELCOME: '/Audio/Audio-1.mp3',
+    BATHROOM: '/Audio/Audio-2.mp3',
+    CONTACT: '/Audio/Audio-3.mp3'
+};
+
 // Define available overlay patterns
 const OVERLAY_PATTERNS = {
     ARROWS: {
@@ -72,27 +80,30 @@ const images = [
         caption: 'Living Room',
         quote: 'Where comfort meets style – your perfect gathering space awaits!',
         icon: '../images/livingroom.svg',
-        overlay: OVERLAY_PATTERNS.BLINDS,
+        overlay: OVERLAY_PATTERNS.ARROWS,
         slantedEdge: SLANTED_EDGES.TOP,
-        rectangleBar: RECTANGLE_BARS.BOTTOM
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration: 6
     },
     {
         image: '../images/3.jpg',
         caption: 'Dinning Space',
         quote: 'Dine, laugh, and celebrate in a space that brings everyone together.',
         icon: '../images/dinning.svg',
-        overlay: OVERLAY_PATTERNS.ZIGZAG,
+        overlay: OVERLAY_PATTERNS.ARROWS,
         slantedEdge: SLANTED_EDGES.TOP,
-        rectangleBar: RECTANGLE_BARS.BOTTOM
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
     },
     {
         image: '../images/4.jpg',
         caption: 'Kitchen',
         quote: 'Cook up memories in a kitchen designed for culinary perfection.',
         icon: '../images/kitchen.svg',
-        overlay: OVERLAY_PATTERNS.SHUTTER,
+        overlay: OVERLAY_PATTERNS.RECTANGLES,
         slantedEdge: SLANTED_EDGES.TOP,
-        rectangleBar: RECTANGLE_BARS.BOTTOM
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
     },
     {
         image: '../images/5.jpg',
@@ -102,15 +113,19 @@ const images = [
         overlay: OVERLAY_PATTERNS.CIRCLES,
         slantedEdge: SLANTED_EDGES.TOP,
         rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6,
+        audio: AUDIO_FILES.BATHROOM
     },
     {
         image: '../images/6.jpg',
         caption: 'Master Bed Room',
         quote: 'Your personal retreat – rest, recharge, and relax in pure tranquility.',
         icon: '../images/bedroom.svg',
-        overlay: OVERLAY_PATTERNS.ARROWS,
+        overlay: OVERLAY_PATTERNS.SHUTTER,
         slantedEdge: SLANTED_EDGES.TOP,
         rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6,
+        audio: false    
     },
     {
         image: '../images/7.jpg',
@@ -120,15 +135,77 @@ const images = [
         overlay: OVERLAY_PATTERNS.RECTANGLES,
         slantedEdge: SLANTED_EDGES.TOP,
         rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
     },
     {
         image: '../images/8.jpg',
         caption: 'Guest Bed Room',
         quote: 'A cozy retreat for your guests, ensuring comfort and relaxation.',
         icon: '../images/bedroom.svg',
-        overlay: OVERLAY_PATTERNS.TRIANGLES,
+        overlay: OVERLAY_PATTERNS.BLINDS,
         slantedEdge: SLANTED_EDGES.TOP,
-        rectangleBar: RECTANGLE_BARS.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
+    },
+    {
+        image: '../images/9.jpg',
+        caption: 'Corridor',
+        quote: 'Connecting spaces with elegance and style.',
+        icon: '../images/gallary.svg',
+        overlay: OVERLAY_PATTERNS.CURTAINS,
+        slantedEdge: SLANTED_EDGES.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
+    },
+    {
+        image: '../images/10.jpg',
+        caption: 'Home Theatre',
+        quote: 'Experience cinematic magic from the comfort of your home.',
+        icon: '../images/cinema.svg',
+        overlay: OVERLAY_PATTERNS.CIRCLES,
+        slantedEdge: SLANTED_EDGES.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
+    },
+    {
+        image: '../images/11.jpg',
+        caption: 'Retreat Dinning Space',
+        quote: 'A dining experience that feels like a getaway.',
+        icon: '../images/bedroom.svg',
+        overlay: OVERLAY_PATTERNS.BLINDS,
+        slantedEdge: SLANTED_EDGES.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
+    },
+    {
+        image: '../images/12.jpg',
+        caption: 'Kids Bed Room',
+        quote: 'Luxury meets playfulness in a space designed for endless fun.',
+        icon: '../images/bedroom.svg',
+        overlay: OVERLAY_PATTERNS.SHUTTER,
+        slantedEdge: SLANTED_EDGES.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
+    },
+    {
+        image: '../images/13.jpg',
+        caption: 'Bed Room',
+        quote: 'Bedroom with a view – wake up to the cityscape that inspires.',
+        icon: '../images/bedroom.svg',
+        overlay: OVERLAY_PATTERNS.RECTANGLES,
+        slantedEdge: SLANTED_EDGES.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
+    },
+    {
+        image: '../images/14.jpg',
+        caption: 'Office Space',
+        quote: 'Work in style – a workspace that inspires and energizes.',
+        icon: '../images/bedroom.svg',
+        overlay: OVERLAY_PATTERNS.ARROWS,
+        slantedEdge: SLANTED_EDGES.TOP,
+        rectangleBar: RECTANGLE_BARS.BOTTOM,
+        duration:6
     }
 ];
 
@@ -140,21 +217,25 @@ const slides = [
         caption: 'Property View',
         icon: '../images/property.svg',
         propertyDetails: PROPERTY_DETAILS,
-        slantedEdge: SLANTED_EDGES.BOTTOM
+        slantedEdge: SLANTED_EDGES.BOTTOM,
+        duration:6,
+        audio: AUDIO_FILES.WELCOME
     },
     ...images,
     {
         image: '../images/background.jpg',
         type: 'contact',
         contactInfo: {
-            email: 'contact@luxuryhomes.com',
+            email: 'davidbrocker@luxuryhomes.com',
             phone: '+1 (555) 123-4567',
             avatar: './images/avatar.jpg'
-        }
+        },
+        duration:6,
+        audio: AUDIO_FILES.CONTACT
     }
 ];
 
-const SLIDE_DURATION = 6;
+const totalDuration = slides.reduce((sum, slide) => sum + (slide.duration || BASE_DURATION), 0);
 
 // Export for use in other files
-export { slides, SLIDE_DURATION, OVERLAY_PATTERNS, SLANTED_EDGES };
+export { slides, BASE_DURATION, totalDuration, OVERLAY_PATTERNS, SLANTED_EDGES, AUDIO_FILES };
