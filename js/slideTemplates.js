@@ -31,6 +31,32 @@ export function createWelcomeSlide(slide, index, duration, delay) {
     `;
 }
 
+export function createRegularSlide(slide, index, duration, delay) {
+    const { overlay, rectangleBar, quote } = slide;
+
+    return `
+        <div class="slide" style="background-image: url('${slide.image}'); --slide-duration: ${duration}s;">
+            <div class="overlay">
+                ${overlay ? `
+                    <div class="${overlay.top}" style="animation-duration: ${duration}s; animation-delay: ${delay}s; animation-fill-mode: both;"></div>
+                    <div class="${overlay.bottom}" style="animation-duration: ${duration}s; animation-delay: ${delay}s; animation-fill-mode: both;"></div>
+                ` : ''}
+                ${slide.slantedEdge ? `
+                    <div class="${slide.slantedEdge.class}" style="animation-duration: ${duration}s;">
+                        ${createCaptionElement(slide)}
+                    </div>
+                ` : ''}
+                ${quote ? `
+                    <div class="${rectangleBar === 'rectangle-bar-top' ? 'rectangle-bar-top' : 'rectangle-bar-bottom'}" style="animation-duration: ${duration}s; animation-delay: ${delay + 1}s;">
+                        <i>${quote}</i>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+
 export function createContactSlide(slide, index, duration, delay) {
     return `
         <div class="slide" style="background-image: url('${slide.image}'); --slide-duration: ${duration}s;">

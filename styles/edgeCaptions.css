@@ -141,24 +141,24 @@
 .rectangle-bar-top {
     top: 15%;
     bottom: unset;
-    animation: rectangleRight var(--slide-duration) 1 ease-in-out;
+    animation: rectangleRight var(--slide-duration) 1 ease-in-out forwards;
 }
 @keyframes rectangleRight {
-    0% { transform: translateX(100%); opacity: 0; }
+    0% { transform: translateX(-100%); opacity: 0; }
     30% { transform: translateX(0); opacity: 1; }
     70% { transform: translateX(0); opacity: 1; }
-    85% { transform: translateX(-100%); opacity: 0; }
-    100% { transform: translateX(-150%); opacity: 0; }
+    85% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(150%); opacity: 0; }
 }
 
 .rectangle-bar-bottom {
     top: unset;
     bottom: 15%;
-    animation: rectangleLeft var(--slide-duration) 1 ease-in-out;
+    animation: rectangleLeft var(--slide-duration) 1 ease-in-out forwards;
 }
 @keyframes rectangleLeft {
     0% { transform: translateX(-100%); opacity: 0; }
-    30% { transform: translateY(0); opacity: 1; }
+    30% { transform: translateX(0); opacity: 1; }
     70% { transform: translateX(0); opacity: 1; }
     85% { transform: translateX(100%); opacity: 0; }
     100% { transform: translateX(150%); opacity: 0; }

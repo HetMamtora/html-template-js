@@ -4,131 +4,14 @@ import {
     PAN_EFFECTS,
     totalDuration,
 } from './slideConfig.js';
-import { createWelcomeSlide, createContactSlide } from './slideTemplates.js';
+import { createWelcomeSlide, createContactSlide, createRegularSlide } from './slideTemplates.js';
+import { getAudioDuration } from './audioUtils.js';
+import { createDynamicStyles, createStyleTag } from './styleUtils.js';
 
-async function getAudioDuration(audioUrl) {
-    return new Promise((resolve) => {
-        const audio = new Audio(audioUrl);
-        audio.addEventListener('loadedmetadata', () => {
-            resolve(Math.ceil(audio.duration));
-        });
-        audio.addEventListener('error', () => {
-            console.warn(`Error loading audio: ${audioUrl}`);
-            resolve(BASE_DURATION); // Fallback to base duration
-        });
-    });
-}
-
-function calculateDelayForSlide(index) {
+export function calculateDelayForSlide(index) {
     return slides
         .slice(0, index)
         .reduce((sum, slide) => sum + (slide.duration || BASE_DURATION), 0);
-}
-
-function createDynamicStyles(totalDuration) {
-    const style = document.createElement('style');
-    const totalSlides = slides.length;
-    
-    let dynamicStyles = `
-        .slideshow {
-            --total-slides: ${totalSlides};
-            --animation-cycle: ${totalDuration}s;
-        }
-        .overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-        }
-        
-        .slide {
-            position: absolute;
-            inset: 0;
-            background-size: 100%;
-            background-position: center;
-            opacity: 0;
-            z-index: 1;
-            background-repeat: no-repeat;
-            transform-origin: center;
-            will-change: opacity, transform, background-position;
-            overflow: hidden;
-            transform-style:
-        }
-    `;
-
-    // Create individual slide animations
-    slides.forEach((slide, index) => {
-        const delay = calculateDelayForSlide(index);
-        const duration = slide.duration || BASE_DURATION;
-        const startPercent = (delay / totalDuration) * 100;
-        const durationPercent = (duration / totalDuration) * 100;
-        const endPercent = startPercent + durationPercent;
-
-        const panEffect = slide.panEffect || PAN_EFFECTS.RIGHT;
-
-        dynamicStyles += `
-            .slide:nth-child(${index + 2}) {
-                animation-name: slide${index}, ${panEffect};
-                animation-duration: ${totalDuration}s, ${duration}s;
-                animation-timing-function: ease-in-out, ease-in-out;
-                animation-iteration-count: infinite, infinite;
-                animation-delay: 0s, ${delay}s;
-                animation-play-state: paused, paused;
-            }
-            
-            .slide:nth-child(${index + 2}) .caption {
-                animation: captionFade ${duration}s ease-in-out;
-                animation-delay: ${delay}s;
-                animation-play-state: paused;
-                animation-fill-mode: forwards;
-            }
-            
-            ${slide.rectangleBar || '.rectangle-bar-bottom'} {
-                animation: rectangleRight ${duration}s ease-in-out;
-                animation-delay: ${delay + 1}s;
-            }
-
-             @keyframes slide${index} {
-                0%, ${startPercent}% { opacity: 0; }
-                ${startPercent + 0.1}% { opacity: 1; }
-                ${endPercent - 0.1}% { opacity: 1; }
-                ${endPercent}%, 100% { opacity: 0; }
-            }
-        `;
-    });
-    
-
-    // Add the pan and zoom animations
-    dynamicStyles += `
-        @keyframes panAndZoomRight {
-            0% { transform: translateX(-5%) scale(1.15); }
-            100% { transform: translateX(5%) scale(1.3); }
-        }
-        @keyframes panAndZoomLeft {
-            0% { transform: translateX(5%) scale(1.15); }
-            100% { transform: translateX(-5%) scale(1.3); }
-        }
-
-        @keyframes panAndZoomTop {
-            0% { background-position: 50% 100%; transform: scale(1); }
-            100% { background-position: 50% 0%; transform: scale(1.15); }
-        }
-        @keyframes panAndZoomBottom {
-            0% { background-position: 50% 0%; transform: scale(1); }
-            100% { background-position: 50% 100%; transform: scale(1.15); }
-        }
-    `;
-
-    // Add the dynamic styles to the document
-    style.textContent = dynamicStyles;
-    return style;
-}
-
-
-function createStyleTag(index, slideDuration) {
-    const style = document.createElement('style');
-    style.textContent = createDynamicKeyframes(index, slideDuration);
-    return style;
 }
 
 export function createCaptionElement(slide) {
@@ -140,37 +23,9 @@ export function createCaptionElement(slide) {
     `;
 }
 
-
-function createRegularSlide(slide, index, duration, delay) {
-    const { overlay, rectangleBar, quote } = slide;
-
-    return `
-        <div class="slide" style="background-image: url('${slide.image}'); --slide-duration: ${duration}s;">
-            <div class="overlay">
-                ${overlay ? `
-                    <div class="${overlay.top}" style="animation-duration: ${duration}s; animation-delay: ${delay}s;"></div>
-                    <div class="${overlay.bottom}" style="animation-duration: ${duration}s; animation-delay: ${delay}s;"></div>
-                ` : ''}
-                ${slide.slantedEdge ? `
-                    <div class="${slide.slantedEdge.class}" style="animation-duration: ${duration}s;">
-                        ${createCaptionElement(slide)}
-                    </div>
-                ` : ''}
-                ${quote ? `
-                    <div class="${rectangleBar || 'rectangle-bar-bottom' || 'rectangle-bar-top'}" style="animation-duration: ${duration}s; animation-delay: ${delay + 1}s;">
-                        <i>${quote}</i>
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-}
-
-
 async function initSlideshow() {
     console.log('InitSlideshow called');
     
-    // First, let's get all audio durations and update slide durations
     const audioPromises = slides.map(async (slide, index) => {
         if (slide.audio) {
             const duration = await getAudioDuration(slide.audio);
@@ -179,10 +34,10 @@ async function initSlideshow() {
         }
     });
 
-    // Wait for all audio durations to be calculated
+    //ALL AUDIO DURATIONS CALCULATIONS
     await Promise.all(audioPromises);
     
-    // Calculate total duration
+    //TOTAL DURATION
     const totalDuration = slides.reduce((sum, slide) => sum + (slide.duration || BASE_DURATION), 0);
     console.log('Total duration:', totalDuration);
 
@@ -198,7 +53,6 @@ async function initSlideshow() {
         return null;
     });
 
-    // Generate slides HTML
     const slidesHTML = slides.map((slide, index) => {
         const duration = slide.duration || BASE_DURATION;
         const delay = calculateDelayForSlide(index);
@@ -215,7 +69,6 @@ async function initSlideshow() {
         return slideContent;
     }).join('');
 
-    // Add play button and slides to DOM
     slideshow.innerHTML = `
         <div id="playButtonOverlay" class="play-button-overlay">
             <button id="startButton" class="start-button">
@@ -233,7 +86,6 @@ async function initSlideshow() {
     let slideshowStartTime;
 
     function playSlideAudio(index) {
-        // Stop any currently playing audio
         audioElements.forEach(audio => {
             if (audio) {
                 audio.pause();
@@ -241,7 +93,6 @@ async function initSlideshow() {
             }
         });
 
-        // Play audio for current slide if it exists
         if (audioElements[index]) {
             audioElements[index].play().catch(error => {
                 console.warn('Audio playback failed:', error);
@@ -253,7 +104,6 @@ async function initSlideshow() {
         const playButtonOverlay = document.getElementById('playButtonOverlay');
         playButtonOverlay.style.display = 'none';
 
-        // Start all animations
         document.querySelectorAll('.slide, .caption').forEach(slide => {
             slide.style.animationPlayState = 'running';
         });
@@ -279,11 +129,14 @@ async function initSlideshow() {
                 playSlideAudio(currentSlideIndex);
             }
 
-            // Reset if we've reached the end
+            //RESET FROM START
             if (elapsed >= totalDuration) {
-                slideshowStartTime = Date.now();
-                currentSlideIndex = 0;
-                playSlideAudio(0);
+                //BELOW LOGIC IS TO KEEP ANIMATION ON REPEAT AFTER PLAY
+                // slideshowStartTime = Date.now();
+                // currentSlideIndex = 0;
+                // playSlideAudio(0);
+                location.reload();
+                return;
             }
 
             requestAnimationFrame(checkSlideChange);
@@ -296,7 +149,6 @@ async function initSlideshow() {
     startButton.addEventListener('click', startSlideshow);
 }
 
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded');
     initSlideshow();
