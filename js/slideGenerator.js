@@ -1,9 +1,8 @@
 import { 
     slides, 
     BASE_DURATION, 
-    totalDuration, 
-    OVERLAY_PATTERNS, 
-    SLANTED_EDGES 
+    PAN_EFFECTS,
+    totalDuration,
 } from './slideConfig.js';
 import { createWelcomeSlide, createContactSlide } from './slideTemplates.js';
 
@@ -35,17 +34,25 @@ function createDynamicStyles(totalDuration) {
             --total-slides: ${totalSlides};
             --animation-cycle: ${totalDuration}s;
         }
+        .overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
         
         .slide {
             position: absolute;
             inset: 0;
-            background-size: cover;
+            background-size: 100%;
             background-position: center;
             opacity: 0;
             z-index: 1;
             background-repeat: no-repeat;
             transform-origin: center;
-            will-change: opacity, transform;
+            will-change: opacity, transform, background-position;
+            overflow: hidden;
+            transform-style:
         }
     `;
 
@@ -57,17 +64,31 @@ function createDynamicStyles(totalDuration) {
         const durationPercent = (duration / totalDuration) * 100;
         const endPercent = startPercent + durationPercent;
 
+        const panEffect = slide.panEffect || PAN_EFFECTS.RIGHT;
+
         dynamicStyles += `
             .slide:nth-child(${index + 2}) {
-                animation: 
-                    slide${index} ${totalDuration}s infinite ease-in-out,
-                    ${index % 2 === 0 ? 'panImageLeft' : 'panImageBottom'} ${duration}s infinite ease-out,
-                    zoomEffect ${duration}s infinite ease-in-out;
-                animation-delay: 0s;
+                animation-name: slide${index}, ${panEffect};
+                animation-duration: ${totalDuration}s, ${duration}s;
+                animation-timing-function: ease-in-out, ease-in-out;
+                animation-iteration-count: infinite, infinite;
+                animation-delay: 0s, ${delay}s;
+                animation-play-state: paused, paused;
+            }
+            
+            .slide:nth-child(${index + 2}) .caption {
+                animation: captionFade ${duration}s ease-in-out;
+                animation-delay: ${delay}s;
                 animation-play-state: paused;
+                animation-fill-mode: forwards;
+            }
+            
+            ${slide.rectangleBar || '.rectangle-bar-bottom'} {
+                animation: rectangleRight ${duration}s ease-in-out;
+                animation-delay: ${delay + 1}s;
             }
 
-            @keyframes slide${index} {
+             @keyframes slide${index} {
                 0%, ${startPercent}% { opacity: 0; }
                 ${startPercent + 0.1}% { opacity: 1; }
                 ${endPercent - 0.1}% { opacity: 1; }
@@ -75,28 +96,34 @@ function createDynamicStyles(totalDuration) {
             }
         `;
     });
+    
 
     // Add the pan and zoom animations
     dynamicStyles += `
-        @keyframes panImageLeft {
-            0% { background-position: 100% center; }
-            100% { background-position: 0% center; }
+        @keyframes panAndZoomRight {
+            0% { transform: translateX(-5%) scale(1.15); }
+            100% { transform: translateX(5%) scale(1.3); }
+        }
+        @keyframes panAndZoomLeft {
+            0% { transform: translateX(5%) scale(1.15); }
+            100% { transform: translateX(-5%) scale(1.3); }
         }
 
-        @keyframes panImageBottom {
-            0% { background-position: center 100%; }
-            100% { background-position: center 0%; }
+        @keyframes panAndZoomTop {
+            0% { background-position: 50% 100%; transform: scale(1); }
+            100% { background-position: 50% 0%; transform: scale(1.15); }
         }
-
-        @keyframes zoomEffect {
-            0%, 100% { transform: scale(1.05); }
-            50% { transform: scale(1.15); }
+        @keyframes panAndZoomBottom {
+            0% { background-position: 50% 0%; transform: scale(1); }
+            100% { background-position: 50% 100%; transform: scale(1.15); }
         }
     `;
 
+    // Add the dynamic styles to the document
     style.textContent = dynamicStyles;
     return style;
 }
+
 
 function createStyleTag(index, slideDuration) {
     const style = document.createElement('style');
@@ -115,29 +142,30 @@ export function createCaptionElement(slide) {
 
 
 function createRegularSlide(slide, index, duration, delay) {
-    const { overlay } = slide;
+    const { overlay, rectangleBar, quote } = slide;
 
     return `
         <div class="slide" style="background-image: url('${slide.image}'); --slide-duration: ${duration}s;">
             <div class="overlay">
                 ${overlay ? `
-                    <div class="${overlay.top}" style="animation-duration: ${duration}s; animation-delay: ${delay}s"></div>
-                    <div class="${overlay.bottom}" style="animation-duration: ${duration}s; animation-delay: ${delay}s"></div>
+                    <div class="${overlay.top}" style="animation-duration: ${duration}s; animation-delay: ${delay}s;"></div>
+                    <div class="${overlay.bottom}" style="animation-duration: ${duration}s; animation-delay: ${delay}s;"></div>
                 ` : ''}
                 ${slide.slantedEdge ? `
-                    <div class="${slide.slantedEdge.class}" style="animation-duration: ${duration}s; animation-delay: ${delay}s">
+                    <div class="${slide.slantedEdge.class}" style="animation-duration: ${duration}s;">
                         ${createCaptionElement(slide)}
                     </div>
                 ` : ''}
-                ${slide.quote ? `
-                    <div class="${slide.rectangleBar || 'rectangle-bar-bottom'}" style="animation-duration: ${duration}s; animation-delay: ${delay}s">
-                        <i>${slide.quote}</i>
+                ${quote ? `
+                    <div class="${rectangleBar || 'rectangle-bar-bottom' || 'rectangle-bar-top'}" style="animation-duration: ${duration}s; animation-delay: ${delay + 1}s;">
+                        <i>${quote}</i>
                     </div>
                 ` : ''}
             </div>
         </div>
     `;
 }
+
 
 async function initSlideshow() {
     console.log('InitSlideshow called');
@@ -226,8 +254,12 @@ async function initSlideshow() {
         playButtonOverlay.style.display = 'none';
 
         // Start all animations
-        document.querySelectorAll('.slide').forEach(slide => {
+        document.querySelectorAll('.slide, .caption').forEach(slide => {
             slide.style.animationPlayState = 'running';
+        });
+
+        document.querySelectorAll('.overlay div, .rectangle-bar').forEach(element => {
+            element.style.animationPlayState = 'running';
         });
 
         slideshowStartTime = Date.now();
