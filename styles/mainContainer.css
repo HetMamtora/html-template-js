@@ -7,7 +7,7 @@ body {
     background: #fff;
     overflow: hidden;
 }
-.slideshow {
+/* .slideshow {
     width: 90vw;
     height: 50vw;
     max-width: 1400px;
@@ -18,7 +18,7 @@ body {
     overflow: hidden;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
+} */
 
 .corner-only {
     --s: 35px;
@@ -31,8 +31,8 @@ body {
     width: 200px;
     background: #1b1a1a content-box;
     color: #fff;
-    transform: none;
-    animation: none;
+    transform: none !important;
+    animation: none !important;
     mask: 
       conic-gradient(#000 0 0) content-box,
       conic-gradient(at var(--s) var(--s),#0000 75%,#000 0) 
@@ -43,6 +43,12 @@ body {
     justify-content: center;
     text-align: center;
     color: yellow;
+}
+
+.no-animation {
+    position: absolute;
+    animation: none !important;
+    transition: none !important;
 }
 
 .slide {

@@ -6,7 +6,7 @@ export async function getAudioDuration(audioUrl) {
         });
         audio.addEventListener('error', () => {
             console.warn(`Error loading audio: ${audioUrl}`);
-            resolve(BASE_DURATION); // Fallback to base duration
+            resolve(BASE_DURATION);
         });
     });
 }

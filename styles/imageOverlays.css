@@ -21,8 +21,8 @@
 /* ARROW */
 .top-arrow {
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 50px), 50% 100%, 0 calc(100% - 50px));  
-    height: 400px;
-    animation: arrowFromTop var(--slide-duration) infinite ease-in-out;
+    height: 500px;
+    animation: arrowFromTop 6s infinite forwards;
     top: 0;
     left: 0;
     transform: translateY(-200%);
@@ -38,9 +38,9 @@
 
 .bottom-arrow {
     clip-path: polygon(0 0, 50% 50px, 100% 0, 100% 100%, 0 100%);
-    height: 500px;
+    height: 600px;
     margin-top: -40px;
-    animation: arrowFromBottom var(--slide-duration) infinite ease-in-out;
+    animation: arrowFromBottom 6s infinite forwards;
     transform: translateY(200%);
 }
 @keyframes arrowFromBottom {
@@ -53,7 +53,7 @@
 }
 
 .top-zigzag {
-    height: 400px;
+    height: 500px;
     clip-path: polygon(
         0 0, 100% 0,
         100% 80%, 90% 70%,
@@ -63,7 +63,7 @@
         20% 80%, 10% 70%,
         0 80%
     );
-    animation: zigzagFromTop var(--slide-duration) infinite ease-in-out;
+    animation: zigzagFromTop 6s infinite forwards;
     transform: translateY(-200%);
 }
 @keyframes zigzagFromTop {
@@ -76,7 +76,7 @@
 }
 
 .bottom-zigzag {
-    height: 400px;
+    height: 500px;
     clip-path: polygon(
         0 20%, 10% 30%,
         20% 20%, 30% 30%,
@@ -86,7 +86,7 @@
         100% 20%, 100% 100%,
         0 100%
     );
-    animation: zigzagFromBottom var(--slide-duration) infinite ease-in-out;
+    animation: zigzagFromBottom 6s infinite forwards;
     transform: translateY(200%);
 }
 @keyframes zigzagFromBottom {
@@ -100,9 +100,9 @@
 
 /* RECTANGLE */
 .top-rect {
-    height: 400px;
+    height: 500px;
     clip-path: polygon(0 0,100% 0,100% 100%,0 calc(100% - 0px));
-    animation: rectFromLeft var(--slide-duration) infinite ease-in-out;
+    animation: rectFromLeft 6s infinite forwards;
     top: 0;
     left: 0;
     transform: translateX(-200%);
@@ -118,9 +118,9 @@
 
 .bottom-rect {
     margin-top: 20px;
-    height: 400px;
+    height: 500px;
     clip-path: polygon(0 0,100% 0px,100% 100%,0 100%);
-    animation: rectFromRight var(--slide-duration) infinite ease-in-out;
+    animation: rectFromRight 6s infinite forwards;
     transform: translateX(200%);
 }
 @keyframes rectFromRight {
@@ -134,10 +134,10 @@
 
 /* DIAGONAL TRIANGLE */
 .top-triangle {
-    height: 600px;
+    height: 700px;
     clip-path: polygon(0 0,100% 600px,100% 100%,0 100%);
     margin-top: -340px;
-    animation: triangleTopRightCorner var(--slide-duration) infinite ease-in-out;
+    animation: triangleTopRightCorner 6s infinite forwards;
     transform: translate(200%, -200%);
 }
 @keyframes triangleTopRightCorner {
@@ -150,10 +150,10 @@
 }
 
 .bottom-triangle {
-    height: 600px;
+    height: 700px;
     clip-path: polygon(0 0,100% 0,100% 100%,0 calc(100% - 600px));
-    animation: slideBottomLeftCorner var(--slide-duration) infinite ease-in-out;
-    top: 0;
+    animation: slideBottomLeftCorner 6s infinite forwards;
+    top: 0%;
     left: 0;
     margin-bottom: 0;
     transform: translate(-200%, 200%);
@@ -180,32 +180,35 @@
 .curtain-left{
     left: 0;
     clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-    animation: curtainLeft var(--slide-duration) infinite ease-in-out;
-    transform: translateX(-200%);
+    animation: curtainLeft 6s infinite ease-in-out;
+    transform: translateX(-150%);
 }
 @keyframes curtainLeft {
     0%, 100% {
-        transform: translateX(-200%);
+        transform: translateX(-100%);
         opacity: 0;
     }
     20% { transform: translateX(0); opacity: 1; }
-    55% { transform: translateX(-200%); opacity: 0; }
+    80% { transform: translateX(-100%); opacity: 1; }
+    90% { transform: translateX(-150%); opacity: 0; }
 }
 
 .curtain-right {
     right: 0;
     clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%);
-    animation: curtainRight var(--slide-duration) infinite ease-in-out;
-    transform: translateX(200%);
+    animation: curtainRight 6s infinite ease-in-out;
+    transform: translateX(150%);
 }
 @keyframes curtainRight {
     0%, 100% {
-        transform: translateX(200%);
+        transform: translateX(100%);
         opacity: 0;
     }
     20% { transform: translateX(0); opacity: 1; }
-    55% { transform: translateX(200%); opacity: 0; }
+    80% { transform: translateX(100%); opacity: 1; }
+    90% { transform: translateX(150%); opacity: 0; }
 }
+
 
 /* Replace VORTEX with BLINDS */
 .top-blinds {
@@ -214,7 +217,7 @@
     flex-direction: column;
     gap: 10px;
     overflow: hidden;
-    animation: blindsFromTop var(--slide-duration) infinite ease-in-out;
+    animation: blindsFromTop 6s infinite forwards;
     transform: translateY(-200%);
 }
 
@@ -223,7 +226,7 @@
     content: '';
     height: 60px;
     background: inherit;
-    animation: blindsRotateTop var(--slide-duration) infinite ease-in-out;
+    animation: blindsRotateTop 6s infinite forwards;
     transform-origin: left;
     box-shadow: 
         0 70px 0 0 rgba(0, 0, 0, 0.5),
@@ -253,7 +256,7 @@
     flex-direction: column;
     gap: 10px;
     overflow: hidden;
-    animation: blindsFromBottom var(--slide-duration) infinite ease-in-out;
+    animation: blindsFromBottom 6s infinite forwards;
     transform: translateY(200%);
 }
 
@@ -262,7 +265,7 @@
     content: '';
     height: 60px;
     background: inherit;
-    animation: blindsRotateBottom var(--slide-duration) infinite ease-in-out;
+    animation: blindsRotateBottom 6s infinite forwards;
     transform-origin: right;
     box-shadow: 
         0 70px 0 0 rgba(0, 0, 0, 0.5),
@@ -290,7 +293,7 @@
 .top-shutter {
     height: 400px;
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
-    animation: shutterFromCenter var(--slide-duration) infinite ease-in-out;
+    animation: shutterFromCenter 6s infinite forwards;
     transform-origin: top;
     transform: scaleY(0);
 }
@@ -312,7 +315,7 @@
 .bottom-shutter {
     height: 400px;
     clip-path: polygon(0 0, 50% 15%, 100% 0, 100% 100%, 0 100%);
-    animation: shutterToCenter var(--slide-duration) infinite ease-in-out;
+    animation: shutterToCenter 6s infinite forwards;
     transform-origin: bottom;
     transform: scaleY(0);
 }
@@ -337,7 +340,7 @@
     width: 600px;
     border-radius: 50%;
     margin: -150px auto 0;
-    animation: circleFromTop var(--slide-duration) infinite ease-in-out;
+    animation: circleFromTop 6s infinite forwards;
     transform: scale(0) translateY(-200%);
 }
 @keyframes circleFromTop {
@@ -354,7 +357,7 @@
     width: 600px;
     border-radius: 50%;
     margin: -150px auto 0;
-    animation: circleFromBottom var(--slide-duration) infinite ease-in-out;
+    animation: circleFromBottom 6s infinite forwards;
     transform: scale(0) translateY(200%);
 }
 @keyframes circleFromBottom {

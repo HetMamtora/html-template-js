@@ -18,7 +18,7 @@ export function createCaptionElement(slide) {
     return `
         <div class="caption ${slide.slantedEdge?.captionPosition || ''}">
             <img src="${slide.icon}"/>
-            ${slide.caption}
+            ${slide.image}
         </div>
     `;
 }
@@ -27,8 +27,8 @@ async function initSlideshow() {
     console.log('InitSlideshow called');
     
     const audioPromises = slides.map(async (slide, index) => {
-        if (slide.audio) {
-            const duration = await getAudioDuration(slide.audio);
+        if (slide.audio_url) {
+            const duration = await getAudioDuration(slide.audio_url);
             slides[index].duration = duration;
             console.log(`Slide ${index} audio duration:`, duration);
         }
@@ -45,8 +45,8 @@ async function initSlideshow() {
     
     // Create and preload audio elements
     const audioElements = slides.map(slide => {
-        if (slide.audio) {
-            const audio = new Audio(slide.audio);
+        if (slide.audio_url) {
+            const audio = new Audio(slide.audio_url);
             audio.preload = 'auto';
             return audio;
         }
@@ -104,7 +104,7 @@ async function initSlideshow() {
         const playButtonOverlay = document.getElementById('playButtonOverlay');
         playButtonOverlay.style.display = 'none';
 
-        document.querySelectorAll('.slide, .caption').forEach(slide => {
+        document.querySelectorAll('.slide, .image').forEach(slide => {
             slide.style.animationPlayState = 'running';
         });
 

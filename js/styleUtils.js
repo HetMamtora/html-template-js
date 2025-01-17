@@ -40,7 +40,7 @@ export function createDynamicStyles(totalDuration) {
         const durationPercent = (duration / totalDuration) * 100;
         const endPercent = startPercent + durationPercent;
 
-        const panEffect = slide.panEffect || PAN_EFFECTS.RIGHT;
+        const panEffect = slide.image_animation || PAN_EFFECTS.RIGHT;
 
         dynamicStyles += `
             .slide:nth-child(${index + 2}) {
