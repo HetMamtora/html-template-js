@@ -93,6 +93,11 @@ export function createDynamicStyles(totalDuration) {
             0% { background-position: 50% 0%; transform: scale(1); }
             100% { background-position: 50% 100%; transform: scale(1.15); }
         }
+        
+        .slantedEdge {
+        animation: none !important;
+        transform: none !important; /* Ensure no transformation occurs */
+    }
     `;
 
     // Add the dynamic styles to the document

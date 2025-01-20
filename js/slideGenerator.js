@@ -1,9 +1,4 @@
-import { 
-    slides, 
-    BASE_DURATION, 
-    PAN_EFFECTS,
-    totalDuration,
-} from './slideConfig.js';
+import { slides, BASE_DURATION, PAN_EFFECTS, totalDuration } from './slideConfig.js';
 import { createWelcomeSlide, createContactSlide, createRegularSlide } from './slideTemplates.js';
 import { getAudioDuration } from './audioUtils.js';
 import { createDynamicStyles, createStyleTag } from './styleUtils.js';
@@ -23,9 +18,36 @@ export function createCaptionElement(slide) {
     `;
 }
 
-async function initSlideshow() {
+async function initSlideshow(slide) {
     console.log('InitSlideshow called');
-    
+
+    const slideshow = document.getElementById('slideshow');
+
+    //CURVED EDGE Property Data
+    const { propertyDetails } = slide;
+
+    if (propertyDetails) {
+        const { title, amenities } = propertyDetails;
+        const { bedrooms = 0, livingRooms = 0, kitchens = 0, bathrooms = 0 } = amenities || {};
+
+        //
+        const curvedEdge = document.createElement('div');
+        curvedEdge.className = 'curved-edge';
+        curvedEdge.innerHTML = `
+            <p>
+                <span>Welcome to ${title}</span> <br/>
+                <img src="./images/bedroom.svg"/> ${bedrooms}
+                &nbsp; <img src="./images/livingroom.svg"/> ${livingRooms}
+                &nbsp; <img src="./images/kitchen.svg"/> ${kitchens}
+                &nbsp; <img src="./images/bathtub.svg"/> ${bathrooms}
+            </p>
+        `;
+        document.body.appendChild(curvedEdge);
+    } else {
+        console.warn('No property details available for this slide.');
+    }
+
+    //AUDIO
     const audioPromises = slides.map(async (slide, index) => {
         if (slide.audio_url) {
             const duration = await getAudioDuration(slide.audio_url);
@@ -33,17 +55,12 @@ async function initSlideshow() {
             console.log(`Slide ${index} audio duration:`, duration);
         }
     });
-
-    //ALL AUDIO DURATIONS CALCULATIONS
     await Promise.all(audioPromises);
     
     //TOTAL DURATION
     const totalDuration = slides.reduce((sum, slide) => sum + (slide.duration || BASE_DURATION), 0);
     console.log('Total duration:', totalDuration);
-
-    const slideshow = document.getElementById('slideshow');
     
-    // Create and preload audio elements
     const audioElements = slides.map(slide => {
         if (slide.audio_url) {
             const audio = new Audio(slide.audio_url);
@@ -79,7 +96,6 @@ async function initSlideshow() {
         ${slidesHTML}
     `;
 
-    // Add dynamic styles
     document.head.appendChild(createDynamicStyles(totalDuration));
 
     let currentSlideIndex = 0;
@@ -104,6 +120,9 @@ async function initSlideshow() {
         const playButtonOverlay = document.getElementById('playButtonOverlay');
         playButtonOverlay.style.display = 'none';
 
+        const curvedEdge = document.querySelector('.curved-edge');
+        curvedEdge.style.display = 'block';
+
         document.querySelectorAll('.slide, .image').forEach(slide => {
             slide.style.animationPlayState = 'running';
         });
@@ -112,8 +131,17 @@ async function initSlideshow() {
             element.style.animationPlayState = 'running';
         });
 
+        let currentSlideIndex = 0;
         slideshowStartTime = Date.now();
         playSlideAudio(0);
+
+        function updateCurvedEdge(slideIndex) {
+            if (slideIndex === 0) {
+                curvedEdge.style.display = 'block';
+            } else {
+                curvedEdge.style.display = 'none';
+            }
+        }
 
         // Set up audio timing
         function checkSlideChange() {
@@ -127,9 +155,9 @@ async function initSlideshow() {
             if (nextSlideIndex !== -1 && nextSlideIndex !== currentSlideIndex) {
                 currentSlideIndex = nextSlideIndex;
                 playSlideAudio(currentSlideIndex);
+                updateCurvedEdge(currentSlideIndex);
             }
 
-            //RESET FROM START
             if (elapsed >= totalDuration) {
                 //BELOW LOGIC IS TO KEEP ANIMATION ON REPEAT AFTER PLAY
                 // slideshowStartTime = Date.now();
@@ -145,13 +173,23 @@ async function initSlideshow() {
         requestAnimationFrame(checkSlideChange);
     }
 
+    function updateCurvedEdgeContent(slide) {
+        const { propertyDetails } = slide;
+        document.getElementById('curvedEdgeTitle').innerText = `Welcome to ${propertyDetails.title}`;
+        document.getElementById('bedrooms').innerText = propertyDetails.amenities.bedrooms;
+        document.getElementById('livingRooms').innerText = propertyDetails.amenities.livingRooms;
+        document.getElementById('kitchens').innerText = propertyDetails.amenities.kitchens;
+        document.getElementById('bathrooms').innerText = propertyDetails.amenities.bathrooms;
+    }
+
     const startButton = document.getElementById('startButton');
     startButton.addEventListener('click', startSlideshow);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded');
-    initSlideshow();
+    const firstSlide = slides[0];
+    initSlideshow(firstSlide);
 });
 
 window.addEventListener('load', () => {
