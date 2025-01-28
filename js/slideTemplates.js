@@ -1,4 +1,6 @@
 import { createCaptionElement } from './slideGenerator.js';
+import { applyTemplate } from './templates.js';
+import { ACTIVE_TEMPLATE } from './slideConfig.js';
 
 export function createWelcomeSlide(slide, index, duration, delay) {
     const { propertyDetails } = slide;
@@ -7,7 +9,7 @@ export function createWelcomeSlide(slide, index, duration, delay) {
         <div class="slide" style="background-image: url('${slide.image_url}'); --slide-duration: ${duration}s;">
             <div class="overlay">
                 <div class="corner-only">
-                    <p><span class="material-symbols-outlined" style="color: red;">home_pin</span>
+                    <p><i class="fa fa-map-marker" style="font-size:24px"></i>
                         ${propertyDetails.address}<br/><br/>
                         ${propertyDetails.subtitle}
                     </p>
@@ -23,27 +25,28 @@ export function createWelcomeSlide(slide, index, duration, delay) {
 }
 
 export function createRegularSlide(slide, index, duration, delay) {
-    const { overlay_animation, rectangleBar, overlay_text } = slide;
+    const templatedSlide = applyTemplate([slide], ACTIVE_TEMPLATE)[0];
+    const { overlay_animation, rectangleBar, overlay_text, slantedEdge } = templatedSlide;
 
     return `
-        <div class="slide" style="background-image: url('${slide.image_url}'); --slide-duration: ${duration}s;">
-            <div class="overlay">
-                ${overlay_animation ? `
-                    <div class="${overlay_animation.top}" style="animation-duration: ${duration}s; animation-delay: ${delay}s; animation-fill-mode: both;"></div>
-                    <div class="${overlay_animation.bottom}" style="animation-duration: ${duration}s; animation-delay: ${delay}s; animation-fill-mode: both;"></div>
-                ` : ''}
-                ${slide.slantedEdge ? `
-                    <div class="${slide.slantedEdge.class}" style="animation-duration: ${duration}s;">
-                        ${createCaptionElement(slide)}
-                    </div>
-                ` : ''}
-                ${overlay_text ? `
-                    <div class="${rectangleBar === 'rectangle-bar-top' ? 'rectangle-bar-top' : 'rectangle-bar-bottom'}" style="animation-duration: ${duration}s; animation-delay: ${delay + 1}s;">
-                        <i>${overlay_text}</i>
-                    </div>
-                ` : ''}
-            </div>
+    <div class="slide" style="background-image: url('${slide.image_url}'); --slide-duration: ${duration}s;">
+        <div class="overlay">
+            ${overlay_animation ? `
+                <div class="${overlay_animation.top}" style="animation-duration: ${duration}s; animation-delay: ${delay}s;"></div>
+                <div class="${overlay_animation.bottom}" style="animation-duration: ${duration}s; animation-delay: ${delay}s;"></div>
+            ` : ''}
+            ${slantedEdge ? `
+                <div class="${slantedEdge.class}">
+                    ${createCaptionElement(slide)}
+                </div>
+            ` : ''}
+            ${rectangleBar ? `
+                <div class="${rectangleBar}" style="animation-delay: ${delay + 1}s;">
+                    <i>${overlay_text || ''}</i>
+                </div>
+            ` : ''}
         </div>
+    </div>
     `;
 }
 

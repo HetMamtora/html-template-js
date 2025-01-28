@@ -14,7 +14,7 @@
     position: relative;
     will-change: transform, opacity;
     backdrop-filter: blur(10px);
-    animation-delay: 0s !important; /* Force animation to start with slide */
+    animation-delay: 0s !important; 
 }
 
 /* different properties */
@@ -210,7 +210,7 @@
 }
 
 
-/* Replace VORTEX with BLINDS */
+/* BLINDS */
 .top-blinds {
     height: 500px;
     display: flex;
@@ -289,9 +289,9 @@
     20%, 55% { transform: rotateX(0deg); }
 }
 
-/* Replace HEXAGON with SHUTTER */
+/* SHUTTER */
 .top-shutter {
-    height: 400px;
+    height: 500px;
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
     animation: shutterFromCenter 6s infinite forwards;
     transform-origin: top;
@@ -313,7 +313,7 @@
 }
 
 .bottom-shutter {
-    height: 400px;
+    height: 500px;
     clip-path: polygon(0 0, 50% 15%, 100% 0, 100% 100%, 0 100%);
     animation: shutterToCenter 6s infinite forwards;
     transform-origin: bottom;

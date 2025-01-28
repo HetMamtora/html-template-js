@@ -1,9 +1,11 @@
-import { slides, BASE_DURATION, PAN_EFFECTS } from './slideConfig.js';
+import { slides, BASE_DURATION, PAN_EFFECTS, ACTIVE_TEMPLATE } from './slideConfig.js';
 import { calculateDelayForSlide } from './slideGenerator.js';
+import { applyTemplate } from './templates.js';
 
 export function createDynamicStyles(totalDuration) {
     const style = document.createElement('style');
     const totalSlides = slides.length;
+    const templatedSlides = applyTemplate(slides, ACTIVE_TEMPLATE);
     
     let dynamicStyles = `
         .slideshow {
@@ -28,19 +30,30 @@ export function createDynamicStyles(totalDuration) {
             transform-origin: center;
             will-change: opacity, transform, background-position;
             overflow: hidden;
-            transform-style:
+            transform-style: preserve-3d;
         }
     `;
 
     // Create individual slide animations
-    slides.forEach((slide, index) => {
+    templatedSlides.forEach((slide, index) => {
         const delay = calculateDelayForSlide(index);
         const duration = slide.duration || BASE_DURATION;
         const startPercent = (delay / totalDuration) * 100;
         const durationPercent = (duration / totalDuration) * 100;
         const endPercent = startPercent + durationPercent;
-
-        const panEffect = slide.image_animation || PAN_EFFECTS.RIGHT;
+        
+        // Get the correct pan effect based on slide type and template
+        let panEffect;
+        if (index === 0) {
+            // Welcome slide
+            panEffect = slide.image_animation || PAN_EFFECTS.TOP;
+        } else if (index === slides.length - 1) {
+            // Contact slide
+            panEffect = slide.image_animation || PAN_EFFECTS.BOTTOM;
+        } else {
+            // Regular slides
+            panEffect = slide.image_animation || PAN_EFFECTS.RIGHT;
+        }
 
         dynamicStyles += `
             .slide:nth-child(${index + 2}) {
@@ -59,20 +72,33 @@ export function createDynamicStyles(totalDuration) {
                 animation-fill-mode: forwards;
             }
             
-            ${slide.rectangleBar || '.rectangle-bar-bottom'} {
+            ${slide.rectangleBar ? `.${slide.rectangleBar}` : '.rectangle-bar-bottom'} {
                 animation: rectangleRight ${duration}s ease-in-out;
                 animation-delay: ${delay + 1}s;
+                animation-play-state: paused;
             }
 
-             @keyframes slide${index} {
+            @keyframes slide${index} {
                 0%, ${startPercent}% { opacity: 0; }
                 ${startPercent + 0.1}% { opacity: 1; }
                 ${endPercent - 0.1}% { opacity: 1; }
                 ${endPercent}%, 100% { opacity: 0; }
             }
+            
+            ${slide.overlay_animation ? `
+                .slide:nth-child(${index + 2}) .${slide.overlay_animation.top} {
+                    animation: overlayTop ${duration}s ease-in-out;
+                    animation-delay: ${delay}s;
+                    animation-play-state: paused;
+                }
+                .slide:nth-child(${index + 2}) .${slide.overlay_animation.bottom} {
+                    animation: overlayBottom ${duration}s ease-in-out;
+                    animation-delay: ${delay}s;
+                    animation-play-state: paused;
+                }
+            ` : ''}
         `;
     });
-    
 
     // Add the pan and zoom animations
     dynamicStyles += `
@@ -95,19 +121,12 @@ export function createDynamicStyles(totalDuration) {
         }
         
         .slantedEdge {
-        animation: none !important;
-        transform: none !important; /* Ensure no transformation occurs */
-    }
+            animation: none !important;
+            transform: none !important; /* Ensure no transformation occurs */
+        }
     `;
 
-    // Add the dynamic styles to the document
+    console.log('Generated Dynamic Styles:', dynamicStyles);
     style.textContent = dynamicStyles;
-    return style;
-}
-
-
-export function createStyleTag(index, slideDuration) {
-    const style = document.createElement('style');
-    style.textContent = createDynamicKeyframes(index, slideDuration);
     return style;
 }

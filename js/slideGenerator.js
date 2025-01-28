@@ -1,7 +1,10 @@
-import { slides, BASE_DURATION, PAN_EFFECTS, totalDuration } from './slideConfig.js';
+import { slides, BASE_DURATION, PAN_EFFECTS, totalDuration, ACTIVE_TEMPLATE, initializeConfig  } from './slideConfig.js';
 import { createWelcomeSlide, createContactSlide, createRegularSlide } from './slideTemplates.js';
 import { getAudioDuration } from './audioUtils.js';
-import { createDynamicStyles, createStyleTag } from './styleUtils.js';
+import { createDynamicStyles } from './styleUtils.js';
+import { applyTemplate } from './templates.js';
+
+let config;
 
 export function calculateDelayForSlide(index) {
     return slides
@@ -22,17 +25,25 @@ async function initSlideshow(slide) {
     console.log('InitSlideshow called');
 
     const slideshow = document.getElementById('slideshow');
+    const templatedSlides = applyTemplate(config.slides, config.ACTIVE_TEMPLATE);
 
-    //CURVED EDGE Property Data
+    if (!templatedSlides || templatedSlides.length === 0) {
+        console.error('Templated slides are empty or undefined.');
+        return;
+    }
+
+    console.log('Templated Slides:', templatedSlides);
+
+    // Create curved edge but keep it hidden initially
     const { propertyDetails } = slide;
-
     if (propertyDetails) {
         const { title, amenities } = propertyDetails;
         const { bedrooms = 0, livingRooms = 0, kitchens = 0, bathrooms = 0 } = amenities || {};
 
-        //
         const curvedEdge = document.createElement('div');
         curvedEdge.className = 'curved-edge';
+        // Add initial hidden state
+        curvedEdge.style.display = 'none';
         curvedEdge.innerHTML = `
             <p>
                 <span>Welcome to ${title}</span> <br/>
@@ -57,7 +68,6 @@ async function initSlideshow(slide) {
     });
     await Promise.all(audioPromises);
     
-    //TOTAL DURATION
     const totalDuration = slides.reduce((sum, slide) => sum + (slide.duration || BASE_DURATION), 0);
     console.log('Total duration:', totalDuration);
     
@@ -120,8 +130,11 @@ async function initSlideshow(slide) {
         const playButtonOverlay = document.getElementById('playButtonOverlay');
         playButtonOverlay.style.display = 'none';
 
+        // Show curved edge only after slideshow starts
         const curvedEdge = document.querySelector('.curved-edge');
-        curvedEdge.style.display = 'block';
+        if (curvedEdge) {
+            curvedEdge.style.display = 'block';
+        }
 
         document.querySelectorAll('.slide, .image').forEach(slide => {
             slide.style.animationPlayState = 'running';
@@ -131,19 +144,17 @@ async function initSlideshow(slide) {
             element.style.animationPlayState = 'running';
         });
 
-        let currentSlideIndex = 0;
+        currentSlideIndex = 0;
         slideshowStartTime = Date.now();
         playSlideAudio(0);
 
         function updateCurvedEdge(slideIndex) {
-            if (slideIndex === 0) {
-                curvedEdge.style.display = 'block';
-            } else {
-                curvedEdge.style.display = 'none';
+            const curvedEdge = document.querySelector('.curved-edge');
+            if (curvedEdge) {
+                curvedEdge.style.display = slideIndex === 0 ? 'block' : 'none';
             }
         }
 
-        // Set up audio timing
         function checkSlideChange() {
             const elapsed = (Date.now() - slideshowStartTime) / 1000;
             const nextSlideIndex = slides.findIndex((_, index) => {
@@ -159,10 +170,6 @@ async function initSlideshow(slide) {
             }
 
             if (elapsed >= totalDuration) {
-                //BELOW LOGIC IS TO KEEP ANIMATION ON REPEAT AFTER PLAY
-                // slideshowStartTime = Date.now();
-                // currentSlideIndex = 0;
-                // playSlideAudio(0);
                 location.reload();
                 return;
             }
@@ -173,23 +180,22 @@ async function initSlideshow(slide) {
         requestAnimationFrame(checkSlideChange);
     }
 
-    function updateCurvedEdgeContent(slide) {
-        const { propertyDetails } = slide;
-        document.getElementById('curvedEdgeTitle').innerText = `Welcome to ${propertyDetails.title}`;
-        document.getElementById('bedrooms').innerText = propertyDetails.amenities.bedrooms;
-        document.getElementById('livingRooms').innerText = propertyDetails.amenities.livingRooms;
-        document.getElementById('kitchens').innerText = propertyDetails.amenities.kitchens;
-        document.getElementById('bathrooms').innerText = propertyDetails.amenities.bathrooms;
-    }
-
     const startButton = document.getElementById('startButton');
     startButton.addEventListener('click', startSlideshow);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM Content Loaded');
-    const firstSlide = slides[0];
-    initSlideshow(firstSlide);
+    try {
+        config = await initializeConfig();
+        const firstSlide = config.slides[0];
+        initSlideshow(firstSlide);
+
+        console.log('Slides:', config.slides);
+        console.log('Total Duration:', config.totalDuration);
+    } catch (error) {
+        console.error('Error initializing slideshow:', error);
+    }
 });
 
 window.addEventListener('load', () => {

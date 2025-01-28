@@ -44,6 +44,9 @@ body {
     text-align: center;
     color: yellow;
 }
+.corner-only i{
+    color: red;
+}
 
 .no-animation {
     position: absolute;
@@ -60,6 +63,11 @@ body {
     z-index: 1;
     background-repeat: no-repeat;
     transform-origin: center;
+}
+
+.slide-wrapper {
+    position: relative;
+    overflow: hidden;
 }
 
 .play-button-overlay {
