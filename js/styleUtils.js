@@ -1,13 +1,13 @@
-import { slides, BASE_DURATION, PAN_EFFECTS, ACTIVE_TEMPLATE } from './slideConfig.js';
-import { calculateDelayForSlide } from './slideGenerator.js';
-import { applyTemplate } from './templates.js';
+import { slides, PAN_EFFECTS, ACTIVE_TEMPLATE } from "./slideConfig.js";
+import { calculateDelayForSlide } from "./slideGenerator.js";
+import { applyTemplate } from "./templates.js";
 
 export function createDynamicStyles(totalDuration) {
-    const style = document.createElement('style');
-    const totalSlides = slides.length;
-    const templatedSlides = applyTemplate(slides, ACTIVE_TEMPLATE);
-    
-    let dynamicStyles = `
+	const style = document.createElement("style");
+	const totalSlides = slides.length;
+	const templatedSlides = applyTemplate(slides, ACTIVE_TEMPLATE);
+
+	let dynamicStyles = `
         .slideshow {
             --total-slides: ${totalSlides};
             --animation-cycle: ${totalDuration}s;
@@ -34,28 +34,28 @@ export function createDynamicStyles(totalDuration) {
         }
     `;
 
-    // Create individual slide animations
-    templatedSlides.forEach((slide, index) => {
-        const delay = calculateDelayForSlide(index);
-        const duration = slide.duration || BASE_DURATION;
-        const startPercent = (delay / totalDuration) * 100;
-        const durationPercent = (duration / totalDuration) * 100;
-        const endPercent = startPercent + durationPercent;
-        
-        // Get the correct pan effect based on slide type and template
-        let panEffect;
-        if (index === 0) {
-            // Welcome slide
-            panEffect = slide.image_animation || PAN_EFFECTS.TOP;
-        } else if (index === slides.length - 1) {
-            // Contact slide
-            panEffect = slide.image_animation || PAN_EFFECTS.BOTTOM;
-        } else {
-            // Regular slides
-            panEffect = slide.image_animation || PAN_EFFECTS.RIGHT;
-        }
+	// Create individual slide animations
+	templatedSlides.forEach((slide, index) => {
+		const delay = calculateDelayForSlide(index);
+		const duration = slide.duration;
+		const startPercent = (delay / totalDuration) * 100;
+		const durationPercent = (duration / totalDuration) * 100;
+		const endPercent = startPercent + durationPercent;
 
-        dynamicStyles += `
+		// Get the correct pan effect based on slide type and template
+		let panEffect;
+		if (index === 0) {
+			// Welcome slide
+			panEffect = slide.image_animation || PAN_EFFECTS.TOP;
+		} else if (index === slides.length - 1) {
+			// Contact slide
+			panEffect = slide.image_animation || PAN_EFFECTS.BOTTOM;
+		} else {
+			// Regular slides
+			panEffect = slide.image_animation || PAN_EFFECTS.RIGHT;
+		}
+
+		dynamicStyles += `
             .slide:nth-child(${index + 2}) {
                 animation-name: slide${index}, ${panEffect};
                 animation-duration: ${totalDuration}s, ${duration}s;
@@ -72,7 +72,11 @@ export function createDynamicStyles(totalDuration) {
                 animation-fill-mode: forwards;
             }
             
-            ${slide.rectangleBar ? `.${slide.rectangleBar}` : '.rectangle-bar-bottom'} {
+            ${
+				slide.rectangleBar
+					? `.${slide.rectangleBar}`
+					: ".rectangle-bar-bottom"
+			} {
                 animation: rectangleRight ${duration}s ease-in-out;
                 animation-delay: ${delay + 1}s;
                 animation-play-state: paused;
@@ -85,23 +89,29 @@ export function createDynamicStyles(totalDuration) {
                 ${endPercent}%, 100% { opacity: 0; }
             }
             
-            ${slide.overlay_animation ? `
+            ${
+				slide.overlay_animation
+					? `
                 .slide:nth-child(${index + 2}) .${slide.overlay_animation.top} {
                     animation: overlayTop ${duration}s ease-in-out;
                     animation-delay: ${delay}s;
                     animation-play-state: paused;
                 }
-                .slide:nth-child(${index + 2}) .${slide.overlay_animation.bottom} {
+                .slide:nth-child(${index + 2}) .${
+							slide.overlay_animation.bottom
+					  } {
                     animation: overlayBottom ${duration}s ease-in-out;
                     animation-delay: ${delay}s;
                     animation-play-state: paused;
                 }
-            ` : ''}
+            `
+					: ""
+			}
         `;
-    });
+	});
 
-    // Add the pan and zoom animations
-    dynamicStyles += `
+	// Add the pan and zoom animations
+	dynamicStyles += `
         @keyframes panAndZoomRight {
             0% { transform: translateX(-5%) scale(1.15); }
             100% { transform: translateX(5%) scale(1.3); }
@@ -126,7 +136,7 @@ export function createDynamicStyles(totalDuration) {
         }
     `;
 
-    console.log('Generated Dynamic Styles:', dynamicStyles);
-    style.textContent = dynamicStyles;
-    return style;
+	console.log("Generated Dynamic Styles:", dynamicStyles);
+	style.textContent = dynamicStyles;
+	return style;
 }
